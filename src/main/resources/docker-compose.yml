@@ -1,16 +1,19 @@
-version: '3.9'
 
 services:
 
   app:
-    build: .
+    image: springboot-login-registration-app:0.2.RELEASE
     container_name: springboot-login-registration
+    env_file: .env
     ports:
-      - "5000:5000"  # Expone el puerto de la aplicación
+      - "8181:8181"  # Expone el puerto de la aplicación
     depends_on:
       - db
     environment:
-      - DATABASE_URL=postgresql://user:password@db:5432/${SPRING_DATASOURCE_DB}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/LOGIN-REGISTRATION-DB
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+
   db:
     image: postgres:latest
     container_name: postgres_login_registration_db
@@ -21,7 +24,6 @@ services:
       POSTGRES_DB: ${SPRING_DATASOURCE_DB}
     ports:
       - "5432:5432"
-
     volumes:
        - ./postgres:/var/lib/postgresql/data
        - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Monta el script para que se ejecute al iniciar
